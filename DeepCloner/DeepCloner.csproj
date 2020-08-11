@@ -48,6 +48,7 @@
         <Reference Include="System.Core" />
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="DeepCloner.cs" />
         <Compile Include="DeepClonerExtensions.cs" />
         <Compile Include="Helpers\ClonerToExprGenerator.cs" />
         <Compile Include="Helpers\DeepClonerExprGenerator.cs" />

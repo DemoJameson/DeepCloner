@@ -33,6 +33,12 @@ namespace Force.DeepCloner.Helpers {
             if (KnownTypes.TryGetValue(type, out isSafe))
                 return isSafe;
 
+            bool? processResult = DeepCloner.InvokeKnownTypesProcessor(type);
+            if (processResult != null) {
+                KnownTypes.TryAdd(type, (bool) processResult);
+                return (bool) processResult;
+            }
+
             // enums are safe
             // pointers (e.g. int*) are unsafe, but we cannot do anything with it except blind copy
             if (type.IsEnum() || type.IsPointer) {
