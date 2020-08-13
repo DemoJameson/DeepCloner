@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace Force.DeepCloner.Helpers {
-    internal class DeepCloneState {
+    public class DeepCloneState {
         private class CustomEqualityComparer : IEqualityComparer<object>, IEqualityComparer {
             bool IEqualityComparer<object>.Equals(object x, object y) {
                 return ReferenceEquals(x, y);

@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Force.DeepCloner.Helpers;
 
 namespace Force.DeepCloner {
     public delegate bool? KnownTypesProcessor(Type type);
     public delegate object PostCloneProcessor(object sourceObj, object clonedObj);
-    public delegate object PreCloneProcessor(object sourceObj);
-    
+    public delegate object PreCloneProcessor(object sourceObj, DeepCloneState deepCloneState);
+
     public static class DeepCloner {
         private static readonly List<KnownTypesProcessor> KnownTypesProcessors = new List<KnownTypesProcessor>();
         private static readonly List<PostCloneProcessor> PostCloneProcessors = new List<PostCloneProcessor>();
@@ -33,7 +34,7 @@ namespace Force.DeepCloner {
         internal static object InvokePostCloneProcessor(object sourceObj, object clonedObj) {
             return PostCloneProcessors.Aggregate(clonedObj, (returnObj, processor) => processor(sourceObj, returnObj));
         }
-        
+
         public static void AddPreCloneProcessor(PreCloneProcessor preCloneProcessor) {
             if (preCloneProcessor != null && !PreCloneProcessors.Contains(preCloneProcessor)) {
                 PreCloneProcessors.Add(preCloneProcessor);
@@ -52,10 +53,10 @@ namespace Force.DeepCloner {
             PreCloneProcessors.Clear();
         }
 
-        internal static object InvokePreCloneProcessor(object sourceObj) {
-            return PreCloneProcessors.Aggregate(sourceObj, (returnObj, processor) => processor(sourceObj));
+        internal static object InvokePreCloneProcessor(object sourceObj, DeepCloneState deepCloneState) {
+            return PreCloneProcessors.Aggregate(sourceObj, (returnObj, processor) => processor(sourceObj, deepCloneState));
         }
-        
+
         public static void AddKnownTypesProcessor(KnownTypesProcessor knownTypesProcessor) {
             if (knownTypesProcessor != null && !KnownTypesProcessors.Contains(knownTypesProcessor)) {
                 KnownTypesProcessors.Add(knownTypesProcessor);

@@ -45,7 +45,7 @@ namespace Force.DeepCloner.Helpers {
             if (knownRef != null)
                 return knownRef;
 
-            var preProcessObj = DeepCloner.InvokePreCloneProcessor(obj);
+            var preProcessObj = DeepCloner.InvokePreCloneProcessor(obj, state);
             if (preProcessObj != null)
                 return preProcessObj;
 
