@@ -6,7 +6,7 @@ using Force.DeepCloner.Helpers;
 namespace Force.DeepCloner {
     public delegate bool? KnownTypesProcessor(Type type);
     public delegate object PostCloneProcessor(object sourceObj, object clonedObj);
-    public delegate object PreCloneProcessor(object sourceObj, DeepCloneState deepCloneState);
+    public delegate object PreCloneProcessor(object sourceObj, DeepCloneState deepCloneState, Func<object, DeepCloneState, object> cloner);
 
     public static class DeepCloner {
         private static readonly List<KnownTypesProcessor> KnownTypesProcessors = new List<KnownTypesProcessor>();
@@ -53,8 +53,9 @@ namespace Force.DeepCloner {
             PreCloneProcessors.Clear();
         }
 
-        internal static object InvokePreCloneProcessor(object sourceObj, DeepCloneState deepCloneState) {
-            return PreCloneProcessors.Aggregate(sourceObj, (returnObj, processor) => processor(sourceObj, deepCloneState));
+        internal static object InvokePreCloneProcessor(object sourceObj, DeepCloneState deepCloneState,
+            Func<object, DeepCloneState, object> cloner) {
+            return PreCloneProcessors.Aggregate(sourceObj, (returnObj, processor) => processor(sourceObj, deepCloneState, cloner));
         }
 
         public static void AddKnownTypesProcessor(KnownTypesProcessor knownTypesProcessor) {
