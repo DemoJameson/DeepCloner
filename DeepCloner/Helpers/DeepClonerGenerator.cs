@@ -3,21 +3,23 @@ using System.Linq;
 
 namespace Force.DeepCloner.Helpers {
     internal static class DeepClonerGenerator {
-        public static T CloneObject<T>(T obj) {
+        public static T CloneObject<T>(T obj, DeepCloneState state = null) {
+            if(state == null) state = new DeepCloneState();
+
             if (obj is ValueType) {
                 var type = obj.GetType();
                 if (typeof(T) == type) {
                     if (DeepClonerSafeTypes.CanReturnSameObject(type))
                         return obj;
 
-                    return CloneStructInternal(obj, new DeepCloneState());
+                    return CloneStructInternal(obj, state);
                 }
             }
 
-            return (T) CloneClassRoot(obj);
+            return (T) CloneClassRoot(obj, state);
         }
 
-        private static object CloneClassRoot(object obj) {
+        private static object CloneClassRoot(object obj, DeepCloneState state = null) {
             if (obj == null)
                 return null;
 
@@ -27,7 +29,13 @@ namespace Force.DeepCloner.Helpers {
             if (cloner == null)
                 return obj;
 
-            return cloner(obj, new DeepCloneState());
+            if(state == null) state = new DeepCloneState();
+
+            var knownRef = state.GetKnownRef(obj);
+            if (knownRef != null)
+                return knownRef;
+
+            return cloner(obj, state);
         }
 
         internal static object CloneClassInternal(object obj, DeepCloneState state) {
@@ -170,7 +178,7 @@ namespace Force.DeepCloner.Helpers {
 #endif
         }
 
-        public static object CloneObjectTo(object objFrom, object objTo, bool isDeep) {
+        public static object CloneObjectTo(object objFrom, object objTo, bool isDeep, DeepCloneState state = null) {
             if (objTo == null) return null;
 
             if (objFrom == null)
@@ -185,7 +193,9 @@ namespace Force.DeepCloner.Helpers {
                 ? DeepClonerCache.GetOrAddDeepClassTo(type, t => ClonerToExprGenerator.GenerateClonerInternal(t, true))
                 : DeepClonerCache.GetOrAddShallowClassTo(type, t => ClonerToExprGenerator.GenerateClonerInternal(t, false)));
             if (cloner == null) return objTo;
-            return cloner(objFrom, objTo, new DeepCloneState());
+
+            if(state == null) state = new DeepCloneState();
+            return cloner(objFrom, objTo, state);
         }
     }
 }

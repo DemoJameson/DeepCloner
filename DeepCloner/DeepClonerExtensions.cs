@@ -10,8 +10,9 @@ namespace Force.DeepCloner {
         /// <summary>
         /// Performs deep (full) copy of object and related graph
         /// </summary>
-        public static T DeepClone<T>(this T obj) {
-            return DeepClonerGenerator.CloneObject(obj);
+        public static T DeepClone<T>(this T obj, DeepCloneState state = null) {
+            if(state == null) state = new DeepCloneState();
+            return DeepClonerGenerator.CloneObject(obj, state);
         }
 
         /// <summary>
@@ -19,8 +20,9 @@ namespace Force.DeepCloner {
         /// </summary>
         /// <returns>existing filled object</returns>
         /// <remarks>Method is valid only for classes, classes should be descendants in reality, not in declaration</remarks>
-        public static TTo DeepCloneTo<TFrom, TTo>(this TFrom objFrom, TTo objTo) where TTo : class, TFrom {
-            return (TTo) DeepClonerGenerator.CloneObjectTo(objFrom, objTo, true);
+        public static TTo DeepCloneTo<TFrom, TTo>(this TFrom objFrom, TTo objTo, DeepCloneState state = null) where TTo : class, TFrom {
+            if(state == null) state = new DeepCloneState();
+            return (TTo) DeepClonerGenerator.CloneObjectTo(objFrom, objTo, true, state);
         }
 
         /// <summary>
@@ -28,8 +30,9 @@ namespace Force.DeepCloner {
         /// </summary>
         /// <returns>existing filled object</returns>
         /// <remarks>Method is valid only for classes, classes should be descendants in reality, not in declaration</remarks>
-        public static TTo ShallowCloneTo<TFrom, TTo>(this TFrom objFrom, TTo objTo) where TTo : class, TFrom {
-            return (TTo) DeepClonerGenerator.CloneObjectTo(objFrom, objTo, false);
+        public static TTo ShallowCloneTo<TFrom, TTo>(this TFrom objFrom, TTo objTo, DeepCloneState state = null) where TTo : class, TFrom {
+            if(state == null) state = new DeepCloneState();
+            return (TTo) DeepClonerGenerator.CloneObjectTo(objFrom, objTo, false, state);
         }
 
         /// <summary>
