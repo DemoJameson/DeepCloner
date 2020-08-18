@@ -35,13 +35,13 @@ namespace Force.DeepCloner.Helpers {
             if (knownRef != null)
                 return knownRef;
 
-            var preProcessObj = DeepCloner.InvokePreCloneProcessor(obj, state, cloner);
+            var preProcessObj = DeepCloner.InvokePreCloneProcessor(obj, state);
             if (preProcessObj != null)
                 return preProcessObj;
 
             object clonedObj = cloner(obj, state);
 
-            return DeepCloner.InvokePostCloneProcessor(obj, clonedObj);
+            return DeepCloner.InvokePostCloneProcessor(obj, clonedObj, state);
         }
 
         internal static object CloneClassInternal(object obj, DeepCloneState state) {
@@ -59,13 +59,13 @@ namespace Force.DeepCloner.Helpers {
             if (knownRef != null)
                 return knownRef;
 
-            var preProcessObj = DeepCloner.InvokePreCloneProcessor(obj, state, cloner);
+            var preProcessObj = DeepCloner.InvokePreCloneProcessor(obj, state);
             if (preProcessObj != null)
                 return preProcessObj;
 
             object clonedObj = cloner(obj, state);
 
-            return DeepCloner.InvokePostCloneProcessor(obj, clonedObj);
+            return DeepCloner.InvokePostCloneProcessor(obj, clonedObj, state);
         }
 
         private static T CloneStructInternal<T>(T obj, DeepCloneState state) // where T : struct

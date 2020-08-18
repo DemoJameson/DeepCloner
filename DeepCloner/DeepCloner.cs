@@ -5,8 +5,8 @@ using Force.DeepCloner.Helpers;
 
 namespace Force.DeepCloner {
     public delegate bool? KnownTypesProcessor(Type type);
-    public delegate object PostCloneProcessor(object sourceObj, object clonedObj);
-    public delegate object PreCloneProcessor(object sourceObj, DeepCloneState deepCloneState, Func<object, DeepCloneState, object> cloner);
+    public delegate object PostCloneProcessor(object sourceObj, object clonedObj, DeepCloneState deepCloneState);
+    public delegate object PreCloneProcessor(object sourceObj, DeepCloneState deepCloneState);
 
     public static class DeepCloner {
         private static readonly List<KnownTypesProcessor> KnownTypesProcessors = new List<KnownTypesProcessor>();
@@ -31,8 +31,8 @@ namespace Force.DeepCloner {
             PostCloneProcessors.Clear();
         }
 
-        internal static object InvokePostCloneProcessor(object sourceObj, object clonedObj) {
-            return PostCloneProcessors.Aggregate(clonedObj, (returnObj, processor) => processor(sourceObj, returnObj));
+        internal static object InvokePostCloneProcessor(object sourceObj, object clonedObj, DeepCloneState deepCloneState) {
+            return PostCloneProcessors.Aggregate(clonedObj, (returnObj, processor) => processor(sourceObj, returnObj, deepCloneState));
         }
 
         public static void AddPreCloneProcessor(PreCloneProcessor preCloneProcessor) {
@@ -53,9 +53,8 @@ namespace Force.DeepCloner {
             PreCloneProcessors.Clear();
         }
 
-        internal static object InvokePreCloneProcessor(object sourceObj, DeepCloneState deepCloneState,
-            Func<object, DeepCloneState, object> cloner) {
-            return PreCloneProcessors.Aggregate(sourceObj, (returnObj, processor) => processor(sourceObj, deepCloneState, cloner));
+        internal static object InvokePreCloneProcessor(object sourceObj, DeepCloneState deepCloneState) {
+            return PreCloneProcessors.Aggregate(sourceObj, (returnObj, processor) => processor(sourceObj, deepCloneState));
         }
 
         public static void AddKnownTypesProcessor(KnownTypesProcessor knownTypesProcessor) {
