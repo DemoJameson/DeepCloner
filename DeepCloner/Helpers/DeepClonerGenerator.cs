@@ -77,7 +77,13 @@ namespace Force.DeepCloner.Helpers {
             if (cloner == null)
                 return obj;
 
-            return cloner(obj, state);
+            var preProcessObj = DeepCloner.InvokePreCloneProcessor(obj, state);
+            if (preProcessObj != null)
+                return (T) preProcessObj;
+
+            object clonedObj = cloner(obj, state);
+
+            return (T) DeepCloner.InvokePostCloneProcessor(obj, clonedObj, state);
         }
 
         // when we can't use code generation, we can use these methods
