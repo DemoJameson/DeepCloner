@@ -54,7 +54,13 @@ namespace Force.DeepCloner {
         }
 
         internal static object InvokePreCloneProcessor(object sourceObj, DeepCloneState deepCloneState) {
-            return PreCloneProcessors.Aggregate(sourceObj, (returnObj, processor) => processor(sourceObj, deepCloneState));
+            object clonedObj = PreCloneProcessors.Aggregate(sourceObj, (returnObj, processor) => processor(sourceObj, deepCloneState));
+
+            if (clonedObj != null) {
+                deepCloneState.AddKnownRef(sourceObj, clonedObj);
+            }
+
+            return clonedObj;
         }
 
         public static void AddKnownTypesProcessor(KnownTypesProcessor knownTypesProcessor) {
